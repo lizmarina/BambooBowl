@@ -1,25 +1,33 @@
 
 import pygame
+
+from code.assets import load_assets
 from code.menu import Menu
 from code.playing_state import PlayingState
+from code.settings import WIDTH, HEIGHT, FPS
+from code.settings_state import SettingsState
+
 
 class Game:
     def __init__(self):
-        self.WIDTH = 1000
-        self.HEIGHT = 800
+        self.WIDTH = WIDTH
+        self.HEIGHT = HEIGHT
         self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Bamboo Bowl")
 
         self.clock = pygame.time.Clock()
         self.running = True
 
+        self.assets = load_assets()
         self.state = "MENU"
         self.menu = Menu(self)
         self.playing_state = PlayingState(self)
+        self.settings_state = SettingsState(self)
+
 
     def run(self):
         while self.running:
-            dt = self.clock.tick(60) / 1000 # delta time
+            dt = self.clock.tick(FPS) / 1000 # delta time
 
             self.events()
             self.update(dt)
@@ -40,12 +48,16 @@ class Game:
                 self.menu.handle_event(event)
             elif self.state == "GAME":
                 self.playing_state.handle_event(event)
+            elif self.state == "SETTINGS":
+                self.settings_state.handle_event(event)
 
     def update(self, dt):
         if self.state == "MENU":
             self.menu.update(dt)
         elif self.state == "GAME":
             self.playing_state.update(dt)
+        elif self.state == "SETTINGS":
+            self.settings_state.update(dt)
 
     def draw(self):
         self.window.fill((30, 30, 30))
@@ -54,5 +66,7 @@ class Game:
             self.menu.draw(self.window)
         elif self.state == "GAME":
             self.playing_state.draw(self.window)
+        elif self.state == "SETTINGS":
+            self.settings_state.draw(self.window)
 
         pygame.display.flip()
