@@ -4,37 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5827085c-8d88-4a07-aec5-e1ee9b36fd21" name="Changes" comment="Setup game structure, state system and basic UI layout">
-      <change afterPath="$PROJECT_DIR$/assets/Backgrounds/game_background.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Backgrounds/menu_background.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/CabinUps/BbBg_bar1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/CabinUps/BbBg_bar2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/CabinUps/BbBg_bar3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/CabinUps/BbBg_bar4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/CabinUps/BbBg_bar5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/UpButtons/UpButton1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/UpButtons/UpButton2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/UpButtons/UpButton3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/UpButtons/UpButton4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Upgrades/Upgrade0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Upgrades/Upgrade1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Upgrades/Upgrade2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Upgrades/Upgrade3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/Upgrades/Upgrade4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/coin_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/icons/tip_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/menu/exit_button.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/menu/play_button.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/menu/resetGame_button.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/menu/settings_button.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/ui/back_button.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/ui/settings_panel.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/assets.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/settings_state.py" afterDir="false" />
+    <list default="true" id="5827085c-8d88-4a07-aec5-e1ee9b36fd21" name="Changes" comment="Added cabin click,&#10;implemented tips spawning randomly,&#10;added popup feedback, created first upgrade system">
+      <change afterPath="$PROJECT_DIR$/code/const.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/menu.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/playing_state.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/playing_state.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,6 +22,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -94,7 +71,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "Test1",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "C:/Users/Marina Liz/PycharmProjects/BambooBowl/asset",
     "node.js.detected.package.eslint": "true",
@@ -159,7 +136,8 @@
       <updated>1771447280173</updated>
       <workItem from="1771447281257" duration="6546000" />
       <workItem from="1771453892936" duration="5730000" />
-      <workItem from="1772060023296" duration="21339000" />
+      <workItem from="1772060023296" duration="21894000" />
+      <workItem from="1772140105464" duration="21702000" />
     </task>
     <task id="LOCAL-00001" summary="Setup game structure, state system and basic UI layout">
       <option name="closed" value="true" />
@@ -169,21 +147,41 @@
       <option name="project" value="LOCAL" />
       <updated>1771460666350</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added cabin click,&#10;implemented tips spawning randomly,&#10;added popup feedback, created first upgrade system">
+      <option name="closed" value="true" />
+      <created>1772082142307</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1772082142308</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Setup game structure, state system and basic UI layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="Setup game structure, state system and basic UI layout" />
+    <MESSAGE value="Added cabin click,&#10;implemented tips spawning randomly,&#10;added popup feedback, created first upgrade system" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added cabin click,&#10;implemented tips spawning randomly,&#10;added popup feedback, created first upgrade system" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/BambooBowl$menu.coverage" NAME="menu Coverage Results" MODIFIED="1771451131608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/BambooBowl$game.coverage" NAME="game Coverage Results" MODIFIED="1771453910689" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/BambooBowl$playing_state.coverage" NAME="playing_state Coverage Results" MODIFIED="1771452837763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/BambooBowl$main.coverage" NAME="BambooBowl Coverage Results" MODIFIED="1771457536141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\Marina Liz\PycharmProjects\BambooBowl" />
-    <SUITE FILE_PATH="coverage/BambooBowl$BambooBowl.coverage" NAME="BambooBowl Coverage Results" MODIFIED="1772081613616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\Marina Liz\PycharmProjects\BambooBowl" />
+    <SUITE FILE_PATH="coverage/BambooBowl$BambooBowl.coverage" NAME="BambooBowl Coverage Results" MODIFIED="1772167221558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\Marina Liz\PycharmProjects\BambooBowl" />
   </component>
 </project>
