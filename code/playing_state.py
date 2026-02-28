@@ -4,7 +4,7 @@ from typing import Self
 import pygame
 from code.const import WIDTH, HEIGHT, UP_HUB_RECT, GAME_AREA_RECT, MONEY_POS, TIP_VALUE, TIP_MAX_ON_SCREEN, \
     TIP_SPAWN_MIN, TIP_SPAWN_MAX, POPUP_LIFETIME, POPUP_SPEED, UP1_BASE_COST, UP_MAX_LEVEL, TIP_AUTO_TIME, \
-    UP2_BASE_COST, UP3_BASE_COST, TIP_SPAWN_REDUCTION
+    UP2_BASE_COST, UP3_BASE_COST, UP4_BASE_COST, TIP_SPAWN_REDUCTION
 
 
 class PlayingState:
@@ -29,9 +29,18 @@ class PlayingState:
         self.up1_img = self.game.assets["up_button1"]
         self.up2_img = self.game.assets["up_button2"]
         self.up3_img = self.game.assets["up_button3"]
+        self.up4_img = self.game.assets["up_button4"]
 
-        self.cabin_img = self.game.assets["cabin1"]
-        self.cabin_rect = self.cabin_img.get_rect(topleft =(self.game_area.left, self.game_area.top))
+        self.cabins = [
+            self.game.assets["cabin1"],
+            self.game.assets["cabin2"],
+            self.game.assets["cabin3"],
+            self.game.assets["cabin4"],
+            self.game.assets["cabin5"],
+        ]
+        anchor = (self.game_area.centerx, self.game_area.bottom)
+        self.cabin_rect = self.cabins[0].get_rect(midbottom=anchor)
+        self.cabin_anchor = anchor
         self.click_value = 1
 
         self.tip_timer = 0.0
@@ -40,6 +49,7 @@ class PlayingState:
         self.up1_level = 0
         self.up2_level = 0
         self.up3_level = 0
+        self.up4_level = 0
         self.next_tip_time = self.current_tip_spawn_time()
 
         self.upgrade_indicators = [
@@ -54,6 +64,7 @@ class PlayingState:
         self.up1_rect = self.up1_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 90))
         self.up2_rect = self.up2_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 205))
         self.up3_rect = self.up3_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 315))
+        self.up4_rect = self.up4_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 425))
         self.back_rect = self.back_img.get_rect(topleft=(30, 28))
 
 
@@ -66,6 +77,9 @@ class PlayingState:
 
     def up3_cost(self) -> int:
         return UP3_BASE_COST * (self.up3_level + 1)
+
+    def up4_cost(self) -> int:
+        return UP4_BASE_COST * (self.up4_level + 1) * 2
 
 
 
@@ -133,7 +147,9 @@ class PlayingState:
 
     def draw(self, surface):
         surface.blit(self.game.assets["game_background"], (0, 0))
-        surface.blit(self.cabin_img, self.cabin_rect)
+        cabin_img = self.cabins[self.up4_level]
+        self.cabin_rect = cabin_img.get_rect(midbottom=self.cabin_anchor)
+        surface.blit(cabin_img, self.cabin_rect)
 
 
         for t in self.tips:
@@ -183,6 +199,21 @@ class PlayingState:
 
         cost3_rect = cost3_surf.get_rect(topleft=(self.up3_rect.left, self.up3_rect.bottom + 8))
         surface.blit(cost3_surf, cost3_rect)
+
+
+        surface.blit(self.up4_img, self.up4_rect)
+
+        indicator4_img = self.upgrade_indicators[self.up4_level]
+        indicator4_rect = indicator4_img.get_rect(topleft= (self.up4_rect.left + 80, self.up4_rect.top + 30))
+        surface.blit(indicator4_img, indicator4_rect)
+
+        if self.up4_level < UP_MAX_LEVEL:
+            const4_surf = self.ui_font.render(f"Cost: ¥{self.up4_cost()}", True, (0, 0, 0))
+        else:
+            const4_surf = self.ui_font.render("MAX", True, (0, 0, 0))
+
+        const4_rect = const4_surf.get_rect(topleft=(self.up4_rect.left, self.up4_rect.bottom + 8))
+        surface.blit(const4_surf, const4_rect)
 
 
         money_surf = self.money_font.render(f"¥{self.money}", True, (0, 0, 0))
@@ -248,6 +279,14 @@ class PlayingState:
 
                 return
 
+            if self.up4_rect.collidepoint(pos):
+                if self.up4_level < UP_MAX_LEVEL:
+                    cost = self.up4_cost()
+                    if self.money >= cost:
+                        self.money -= cost
+                        self.up4_level += 1
+
+                return
 
             for i in range(len(self.tips) - 1, -1, -1):
                 if self.tips[i]["rect"].collidepoint(pos):

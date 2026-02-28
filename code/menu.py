@@ -7,8 +7,8 @@ class Menu:
         self.game = game
         self.font = pygame.font.Font(None, 60)
 
-        self.play_button = self.game.assets["play_button"]
-        self.button_rect = self.play_button.get_rect(center=(500, 500))
+        self.start_button = self.game.assets["start_button"]
+        self.start_rect = self.start_button.get_rect(center=(500, 500))
 
         self.settings_button = self.game.assets["settings_button"]
         self.settings_rect = self.settings_button.get_rect(center=(500, 610))
@@ -25,12 +25,12 @@ class Menu:
 
 
         # Button
-        surface.blit(self.play_button, self.button_rect)
+        surface.blit(self.start_button, self.start_rect)
         surface.blit(self.settings_button, self.settings_rect)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.button_rect.collidepoint(event.pos):
+            if self.start_rect.collidepoint(event.pos):
                     self.game.state = "GAME"
             if self.settings_rect.collidepoint(event.pos):
                 self.game.state = "SETTINGS"

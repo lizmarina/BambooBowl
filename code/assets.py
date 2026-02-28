@@ -20,7 +20,7 @@ def load_assets():
     assets["tip"] = load_image("./assets/icons/tip_icon.png")
 
     assets["exit_button"] = load_image("./assets/menu/exit_button.png")
-    assets["play_button"] = load_image("./assets/menu/play_button.png")
+    assets["start_button"] = load_image("./assets/menu/play_button.png")
     assets["reset_button"] = load_image("./assets/menu/resetGame_button.png")
     assets["settings_button"] = load_image("./assets/menu/settings_button.png")
 
@@ -32,10 +32,10 @@ def load_assets():
     assets["up_button3"] = load_image("./assets/UpButtons/UpButton3.png")
     assets["up_button4"] = load_image("./assets/UpButtons/UpButton4.png")
 
-    assets["upgrade0"] = load_image("./assets/Upgrades/Upgrade0.png")
-    assets["upgrade1"] = load_image("./assets/Upgrades/Upgrade1.png")
-    assets["upgrade2"] = load_image("./assets/Upgrades/Upgrade2.png")
-    assets["upgrade3"] = load_image("./assets/Upgrades/Upgrade3.png")
-    assets["upgrade4"] = load_image("./assets/Upgrades/Upgrade4.png")
+    assets["upgrade0"] = load_image("./assets/Upgrades/Upgrade_0.png")
+    assets["upgrade1"] = load_image("./assets/Upgrades/Upgrade_1.png")
+    assets["upgrade2"] = load_image("./assets/Upgrades/Upgrade_2.png")
+    assets["upgrade3"] = load_image("./assets/Upgrades/Upgrade_3.png")
+    assets["upgrade4"] = load_image("./assets/Upgrades/Upgrade_4.png")
 
     return assets
