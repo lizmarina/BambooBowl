@@ -1,9 +1,9 @@
-
 import pygame
 
 from code.assets import load_assets
 from code.menu import Menu
 from code.playing_state import PlayingState
+from code.instructions_state import InstructionsState
 from code.settings import WIDTH, HEIGHT, FPS
 from code.settings_state import SettingsState
 
@@ -23,6 +23,13 @@ class Game:
         self.menu = Menu(self)
         self.playing_state = PlayingState(self)
         self.settings_state = SettingsState(self)
+        self.instructions_state = InstructionsState(self)
+
+    def apply_display_mode(self):
+        from code import const
+
+        flags = pygame.FULLSCREEN if const.FULLSCREEN else 0
+        self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT), flags)
 
 
     def run(self):
@@ -40,16 +47,14 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.state = "GAME"
-
             if self.state == "MENU":
                 self.menu.handle_event(event)
             elif self.state == "GAME":
                 self.playing_state.handle_event(event)
             elif self.state == "SETTINGS":
                 self.settings_state.handle_event(event)
+            elif self.state == "INSTRUCTIONS":
+                self.instructions_state.handle_event(event)
 
     def update(self, dt):
         if self.state == "MENU":
@@ -58,6 +63,8 @@ class Game:
             self.playing_state.update(dt)
         elif self.state == "SETTINGS":
             self.settings_state.update(dt)
+        elif self.state == "INSTRUCTIONS":
+            self.instructions_state.update(dt)
 
     def draw(self):
         self.window.fill((30, 30, 30))
@@ -68,5 +75,7 @@ class Game:
             self.playing_state.draw(self.window)
         elif self.state == "SETTINGS":
             self.settings_state.draw(self.window)
+        elif self.state == "INSTRUCTIONS":
+            self.instructions_state.draw(self.window)
 
         pygame.display.flip()

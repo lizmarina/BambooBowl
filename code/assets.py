@@ -21,11 +21,12 @@ def load_assets():
 
     assets["exit_button"] = load_image("./assets/menu/exit_button.png")
     assets["start_button"] = load_image("./assets/menu/play_button.png")
-    assets["reset_button"] = load_image("./assets/menu/resetGame_button.png")
+    assets["instructions_button"] = load_image("./assets/menu/Instructions_button.png")
     assets["settings_button"] = load_image("./assets/menu/settings_button.png")
 
     assets["back_button"] = load_image("./assets/ui/back_button.png")
     assets["settings_panel"] = load_image("./assets/ui/settings_panel.png")
+    assets["instructions_panel"] = load_image("./assets/ui/Instructions_panel.png")
 
     assets["up_button1"] = load_image("./assets/UpButtons/UpButton1.png")
     assets["up_button2"] = load_image("./assets/UpButtons/UpButton2.png")
