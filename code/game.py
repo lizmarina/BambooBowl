@@ -6,14 +6,15 @@ from code.playing_state import PlayingState
 from code.instructions_state import InstructionsState
 from code.settings import WIDTH, HEIGHT, FPS
 from code.settings_state import SettingsState
+from code import const
 
 
 class Game:
     def __init__(self):
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
-        self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Bamboo Bowl")
+        self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
 
         self.clock = pygame.time.Clock()
         self.running = True
@@ -24,13 +25,7 @@ class Game:
         self.playing_state = PlayingState(self)
         self.settings_state = SettingsState(self)
         self.instructions_state = InstructionsState(self)
-
-    def apply_display_mode(self):
-        from code import const
-
-        flags = pygame.FULLSCREEN if const.FULLSCREEN else 0
-        self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT), flags)
-
+        self.fps_font = pygame.font.Font(None, 28)
 
     def run(self):
         while self.running:
@@ -78,4 +73,10 @@ class Game:
         elif self.state == "INSTRUCTIONS":
             self.instructions_state.draw(self.window)
 
+        if const.SHOW_FPS:
+            fps = int(self.clock.get_fps())
+            fps_surf = self.fps_font.render(f"FPS: {fps}", True, (255, 255, 255))
+            self.window.blit(fps_surf, (10, 10))
+
         pygame.display.flip()
+

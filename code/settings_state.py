@@ -11,7 +11,6 @@ class SettingsState:
         self.back_button = self.game.assets["back_button"]
 
         self.panel_rect = self.panel.get_rect(center=(self.game.WIDTH // 2, self.game.HEIGHT // 2))
-        self.back_rect = self.back_button.get_rect(topleft=(30, 28))
 
         self.font = pygame.font.Font(None, 40)
         self.title_font = pygame.font.Font(None, 54)
@@ -28,12 +27,18 @@ class SettingsState:
             self.panel_rect.width - 140,
             48,
         )
-        self.fullscreen_rect = pygame.Rect(
+
+        self.reset_rect = pygame.Rect(
             self.panel_rect.left + 70,
             self.panel_rect.top + 300,
             self.panel_rect.width - 140,
             48,
         )
+        self.reset_confirm = False
+
+        back_x = self.reset_rect.left + 55
+        back_y = self.reset_rect.bottom + 25
+        self.back_rect = self.back_button.get_rect(topleft=(back_x, back_y))
 
     def update(self, dt):
         pass
@@ -46,28 +51,26 @@ class SettingsState:
 
         volume_text = self.font.render(f"Master Volume: {int(const.MASTER_VOLUME * 100)}%", True, (0, 0, 0))
         fps_text = self.font.render(f"Show FPS: {'ON' if const.SHOW_FPS else 'OFF'}", True, (0, 0, 0))
-        fullscreen_text = self.font.render(f"Fullscreen: {'ON' if const.FULLSCREEN else 'OFF'}", True, (0, 0, 0))
-
         surface.blit(volume_text, volume_text.get_rect(midleft=(self.volume_rect.left, self.volume_rect.centery)))
         surface.blit(fps_text, fps_text.get_rect(midleft=(self.fps_rect.left, self.fps_rect.centery)))
-        surface.blit(
-            fullscreen_text,
-            fullscreen_text.get_rect(midleft=(self.fullscreen_rect.left, self.fullscreen_rect.centery)),
-        )
+
+        if not self.reset_confirm:
+            reset_text = self.font.render("Reset Progress", True, (0, 0, 0))
+        else:
+            reset_text = self.font.render("Click again to confirm", True, (0, 0, 0))
+        surface.blit(reset_text, reset_text.get_rect(midleft=(self.reset_rect.left, self.reset_rect.centery)))
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.reset_confirm = False
             self.game.state = "MENU"
             return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             pos = event.pos
 
-            if self.back_rect.collidepoint(pos):
-                self.game.state = "MENU"
-                return
-
             if self.volume_rect.collidepoint(pos):
+                self.reset_confirm = False
                 levels = [0.0, 0.25, 0.5, 0.75, 1.0]
                 current_index = min(range(len(levels)), key=lambda i: abs(levels[i] - const.MASTER_VOLUME))
                 const.MASTER_VOLUME = levels[(current_index + 1) % len(levels)]
@@ -76,10 +79,20 @@ class SettingsState:
                 return
 
             if self.fps_rect.collidepoint(pos):
+                self.reset_confirm = False
                 const.SHOW_FPS = not const.SHOW_FPS
+                print("SHOW_FPS =", const.SHOW_FPS)
                 return
 
-            if self.fullscreen_rect.collidepoint(pos):
-                const.FULLSCREEN = not const.FULLSCREEN
-                self.game.apply_display_mode()
+            if self.reset_rect.collidepoint(pos):
+                if not self.reset_confirm:
+                    self.reset_confirm = True
+                else:
+                    self.game.playing_state.reset_progress()
+                    self.reset_confirm = False
+                return
+
+            if self.back_rect.collidepoint(pos):
+                self.reset_confirm = False
+                self.game.state = "MENU"
                 return

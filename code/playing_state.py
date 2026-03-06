@@ -111,6 +111,24 @@ class PlayingState:
         max_time = TIP_SPAWN_MAX - (self.up3_level * TIP_SPAWN_REDUCTION)
         return random.uniform(min_time, max_time)
 
+    def reset_progress(self):
+        self.money = 0
+        self.click_value = 0
+
+        self.up1_level = 0
+        self.up2_level = 0
+        self.up3_level = 0
+        self.up4_level = 0
+
+        self.tips.clear()
+        self.popups.clear()
+
+        self.gain_accum = 0
+        self.gain_timer = 0
+        self.money_per_sec = 0
+
+        self.tip_timer = 0.0
+        self.next_tip_time = self.current_tip_spawn_time()
 
     def update(self, dt: float):
         self.tip_timer += dt
@@ -118,7 +136,6 @@ class PlayingState:
             self.spawn_tip()
             self.tip_timer = 0.0
             self.next_tip_time = self.current_tip_spawn_time()
-
 
         for p in self.popups:
             p["y"] -= POPUP_SPEED * dt  # makes the popup go upwards
