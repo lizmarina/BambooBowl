@@ -1,8 +1,7 @@
 import random
-from typing import Self
 
 import pygame
-from code.const import WIDTH, HEIGHT, UP_HUB_RECT, GAME_AREA_RECT, MONEY_POS, TIP_VALUE, TIP_MAX_ON_SCREEN, \
+from code.const import UP_HUB_RECT, GAME_AREA_RECT, MONEY_POS, TIP_VALUE, TIP_MAX_ON_SCREEN, \
     TIP_SPAWN_MIN, TIP_SPAWN_MAX, POPUP_LIFETIME, POPUP_SPEED, UP1_BASE_COST, UP_MAX_LEVEL, TIP_AUTO_TIME, \
     UP2_BASE_COST, UP3_BASE_COST, UP4_BASE_COST, TIP_SPAWN_REDUCTION
 
@@ -14,9 +13,15 @@ class PlayingState:
         self.up_hub = pygame.Rect(UP_HUB_RECT)
         self.game_area = pygame.Rect(GAME_AREA_RECT)
 
-        self.money_font = pygame.font.Font(None, 50)
-        self.popup_font = pygame.font.Font(None, 36)
-        self.ui_font = pygame.font.Font(None, 28)
+        self.font_path = "./assets/Baloo-Regular.ttf"
+
+        self.text_color = (121, 21, 9)
+        self.locked_color = (170, 40, 35)
+
+        self.money_font = self.load_font(50)
+        self.popup_font = self.load_font(36)
+        self.ui_font = self.load_font(28)
+        self.cost_font = self.load_font(22)
 
         self.money = 0
         self.gain_accum = 0
@@ -81,6 +86,41 @@ class PlayingState:
     def up4_cost(self) -> int:
         return UP4_BASE_COST * (self.up4_level + 1) * 2
 
+    def load_font(self, size):
+        try:
+            return pygame.font.Font(self.font_path, size)
+        except FileNotFoundError:
+            return pygame.font.Font(None, size)
+
+    def darken_image(self, image, alpha=75):
+        darkened = image.copy()
+        overlay = pygame.Surface(darkened.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, alpha))
+        darkened.blit(overlay, (0, 0))
+        return darkened
+
+    def draw_upgrade(self, surface, image, rect, level, cost_value):
+        at_max = level >= UP_MAX_LEVEL
+        can_afford = self.money >= cost_value
+
+        button_img = image if (at_max or can_afford) else self.darken_image(image)
+        surface.blit(button_img, rect)
+
+        indicator_img = self.upgrade_indicators[level]
+        indicator_rect = indicator_img.get_rect(center=(rect.centerx + 30, rect.centery))
+        surface.blit(indicator_img, indicator_rect)
+
+        if at_max:
+            text = "MAX"
+            color = self.text_color
+        else:
+            text = f"Cost: ¥{cost_value}"
+            color = self.text_color if can_afford else self.locked_color
+
+        cost_surf = self.cost_font.render(text, True, color)
+        cost_rect = cost_surf.get_rect(topleft=(rect.left, rect.bottom + 2))
+        surface.blit(cost_surf, cost_rect)
+
 
 
     def spawn_tip(self):
@@ -113,7 +153,7 @@ class PlayingState:
 
     def reset_progress(self):
         self.money = 0
-        self.click_value = 0
+        self.click_value = 1
 
         self.up1_level = 0
         self.up2_level = 0
@@ -172,72 +212,16 @@ class PlayingState:
         for t in self.tips:
             surface.blit(self.tip_img, t["rect"])
 
+        self.draw_upgrade(surface, self.up1_img, self.up1_rect, self.up1_level, self.up1_cost())
+        self.draw_upgrade(surface, self.up2_img, self.up2_rect, self.up2_level, self.up2_cost())
+        self.draw_upgrade(surface, self.up3_img, self.up3_rect, self.up3_level, self.up3_cost())
+        self.draw_upgrade(surface, self.up4_img, self.up4_rect, self.up4_level, self.up4_cost())
 
-        surface.blit(self.up1_img, self.up1_rect)
-
-        indicator_img = self.upgrade_indicators[self.up1_level]
-        indicator_rect = indicator_img.get_rect(topleft= (self.up1_rect.left + 80, self.up1_rect.top + 30))
-        surface.blit(indicator_img, indicator_rect)
-
-        if self.up1_level < UP_MAX_LEVEL:
-            cost_surf = self.ui_font.render(f"Cost: ¥{self.up1_cost()}", True, (0, 0, 0))
-        else:
-            cost_surf = self.ui_font.render("MAX", True, (0, 0, 0))
-
-        cost_rect = cost_surf.get_rect(topleft=(self.up1_rect.left, self.up1_rect.bottom + 8))
-        surface.blit(cost_surf, cost_rect)
-
-
-        surface.blit(self.up2_img, self.up2_rect)
-
-        indicator2_img = self.upgrade_indicators[self.up2_level]
-        indicator2_rect = indicator2_img.get_rect(topleft= (self.up2_rect.left + 80, self.up2_rect.top + 30))
-        surface.blit(indicator2_img, indicator2_rect)
-
-        if self.up2_level < UP_MAX_LEVEL:
-            cost2_surf = self.ui_font.render(f"Cost: ¥{self.up2_cost()}", True, (0, 0, 0))
-        else:
-            cost2_surf = self.ui_font.render("MAX", True, (0, 0, 0))
-
-        cost2_rect = cost2_surf.get_rect(topleft=(self.up2_rect.left, self.up2_rect.bottom + 8))
-        surface.blit(cost2_surf, cost2_rect)
-
-
-        surface.blit(self.up3_img, self.up3_rect)
-
-        indicator3_img = self.upgrade_indicators[self.up3_level]
-        indicator3_rect = indicator3_img.get_rect(topleft= (self.up3_rect.left + 80, self.up3_rect.top + 30))
-        surface.blit(indicator3_img, indicator3_rect)
-
-        if self.up3_level < UP_MAX_LEVEL:
-            cost3_surf = self.ui_font.render(f"Cost: ¥{self.up3_cost()}", True, (0, 0, 0))
-        else:
-            cost3_surf = self.ui_font.render("MAX", True, (0, 0, 0))
-
-        cost3_rect = cost3_surf.get_rect(topleft=(self.up3_rect.left, self.up3_rect.bottom + 8))
-        surface.blit(cost3_surf, cost3_rect)
-
-
-        surface.blit(self.up4_img, self.up4_rect)
-
-        indicator4_img = self.upgrade_indicators[self.up4_level]
-        indicator4_rect = indicator4_img.get_rect(topleft= (self.up4_rect.left + 80, self.up4_rect.top + 30))
-        surface.blit(indicator4_img, indicator4_rect)
-
-        if self.up4_level < UP_MAX_LEVEL:
-            const4_surf = self.ui_font.render(f"Cost: ¥{self.up4_cost()}", True, (0, 0, 0))
-        else:
-            const4_surf = self.ui_font.render("MAX", True, (0, 0, 0))
-
-        const4_rect = const4_surf.get_rect(topleft=(self.up4_rect.left, self.up4_rect.bottom + 8))
-        surface.blit(const4_surf, const4_rect)
-
-
-        money_surf = self.money_font.render(f"¥{self.money}", True, (0, 0, 0))
+        money_surf = self.money_font.render(f"¥{self.money}", True, self.text_color)
         money_rect = money_surf.get_rect(topleft=self.money_pos)
         surface.blit(money_surf, money_rect)
-        mps = self.ui_font.render(f"{self.money_per_sec} ¥/s", True, (0, 0, 0))
-        surface.blit(mps, (self.money_pos[0], self.money_pos[1] + 40))
+        mps = self.ui_font.render(f"{self.money_per_sec} ¥/s", True, self.text_color)
+        surface.blit(mps, (self.money_pos[0], self.money_pos[1] + 50))
 
 
         for p in self.popups:
@@ -249,7 +233,7 @@ class PlayingState:
             coin_surf.set_alpha(alpha)
             surface.blit(coin_surf, coin_rect)
 
-            txt_surf = self.popup_font.render(f"+¥{p['value']}", True, (0, 0, 0))
+            txt_surf = self.popup_font.render(f"+¥{p['value']}", True, self.text_color)
             txt_surf.set_alpha(alpha)
             txt_rect = txt_surf.get_rect(midleft=(coin_rect.right + 6, coin_rect.centery))
             surface.blit(txt_surf, txt_rect)
