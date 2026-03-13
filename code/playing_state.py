@@ -16,12 +16,17 @@ class PlayingState:
         self.font_path = "./assets/Baloo-Regular.ttf"
 
         self.text_color = (121, 21, 9)
-        self.locked_color = (170, 40, 35)
+        self.locked_color = (130, 40, 35)
 
         self.money_font = self.load_font(50)
         self.popup_font = self.load_font(36)
         self.ui_font = self.load_font(28)
-        self.cost_font = self.load_font(22)
+        self.cost_font = self.load_font(25)
+
+        self.pressed_button = None
+        self.press_timer = 0
+        self.press_duration = 0.08
+        self.current_cursor = pygame.SYSTEM_CURSOR_ARROW
 
         self.money = 0
         self.gain_accum = 0
@@ -68,8 +73,8 @@ class PlayingState:
         self.money_pos = MONEY_POS
         self.up1_rect = self.up1_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 90))
         self.up2_rect = self.up2_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 205))
-        self.up3_rect = self.up3_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 315))
-        self.up4_rect = self.up4_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 425))
+        self.up3_rect = self.up3_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 320))
+        self.up4_rect = self.up4_img.get_rect(topleft=(self.up_hub.left + 10, self.up_hub.top + 435))
         self.back_rect = self.back_img.get_rect(topleft=(30, 28))
 
 
@@ -99,15 +104,16 @@ class PlayingState:
         darkened.blit(overlay, (0, 0))
         return darkened
 
-    def draw_upgrade(self, surface, image, rect, level, cost_value):
+    def draw_upgrade(self, surface, image, rect, level, cost_value, button_name):
+        draw_rect = self.get_draw_rect(button_name, rect)
         at_max = level >= UP_MAX_LEVEL
         can_afford = self.money >= cost_value
 
         button_img = image if (at_max or can_afford) else self.darken_image(image)
-        surface.blit(button_img, rect)
+        surface.blit(button_img, draw_rect)
 
         indicator_img = self.upgrade_indicators[level]
-        indicator_rect = indicator_img.get_rect(center=(rect.centerx + 30, rect.centery))
+        indicator_rect = indicator_img.get_rect(center=(draw_rect.centerx + 30, draw_rect.centery))
         surface.blit(indicator_img, indicator_rect)
 
         if at_max:
@@ -118,9 +124,34 @@ class PlayingState:
             color = self.text_color if can_afford else self.locked_color
 
         cost_surf = self.cost_font.render(text, True, color)
-        cost_rect = cost_surf.get_rect(topleft=(rect.left, rect.bottom + 2))
+        cost_rect = cost_surf.get_rect(topleft=(draw_rect.left + 5, draw_rect.bottom - 7))
         surface.blit(cost_surf, cost_rect)
 
+    def get_hovered_button(self, pos):
+        if self.up1_rect.collidepoint(pos):
+            return "up1"
+        if self.up2_rect.collidepoint(pos):
+            return "up2"
+        if self.up3_rect.collidepoint(pos):
+            return "up3"
+        if self.up4_rect.collidepoint(pos):
+            return "up4"
+        if self.back_rect.collidepoint(pos):
+            return "back"
+        return None
+
+    def get_draw_rect(self, name, rect):
+        if self.pressed_button == name and self.press_timer > 0:
+            return rect.move(0, 2)
+        return rect
+
+    def update_cursor(self):
+        hovered = self.get_hovered_button(pygame.mouse.get_pos())
+        wanted_cursor = pygame.SYSTEM_CURSOR_HAND if hovered else pygame.SYSTEM_CURSOR_ARROW
+
+        if wanted_cursor != self.current_cursor:
+            pygame.mouse.set_cursor(wanted_cursor)
+            self.current_cursor = wanted_cursor
 
 
     def spawn_tip(self):
@@ -200,6 +231,14 @@ class PlayingState:
             self.gain_accum = 0
             self.gain_timer = 0
 
+        if self.press_timer > 0:
+            self.press_timer -= dt
+            if self.press_timer <= 0:
+                self.press_timer = 0
+                self.pressed_button = None
+
+        self.update_cursor()
+
 
 
     def draw(self, surface):
@@ -212,17 +251,16 @@ class PlayingState:
         for t in self.tips:
             surface.blit(self.tip_img, t["rect"])
 
-        self.draw_upgrade(surface, self.up1_img, self.up1_rect, self.up1_level, self.up1_cost())
-        self.draw_upgrade(surface, self.up2_img, self.up2_rect, self.up2_level, self.up2_cost())
-        self.draw_upgrade(surface, self.up3_img, self.up3_rect, self.up3_level, self.up3_cost())
-        self.draw_upgrade(surface, self.up4_img, self.up4_rect, self.up4_level, self.up4_cost())
+        self.draw_upgrade(surface, self.up1_img, self.up1_rect, self.up1_level, self.up1_cost(), "up1")
+        self.draw_upgrade(surface, self.up2_img, self.up2_rect, self.up2_level, self.up2_cost(), "up2")
+        self.draw_upgrade(surface, self.up3_img, self.up3_rect, self.up3_level, self.up3_cost(), "up3")
+        self.draw_upgrade(surface, self.up4_img, self.up4_rect, self.up4_level, self.up4_cost(), "up4")
 
         money_surf = self.money_font.render(f"¥{self.money}", True, self.text_color)
         money_rect = money_surf.get_rect(topleft=self.money_pos)
         surface.blit(money_surf, money_rect)
         mps = self.ui_font.render(f"{self.money_per_sec} ¥/s", True, self.text_color)
         surface.blit(mps, (self.money_pos[0], self.money_pos[1] + 50))
-
 
         for p in self.popups:
             ratio = max(0.0, p["life"] / p["max_life"])  # 1 -> 0
@@ -238,7 +276,8 @@ class PlayingState:
             txt_rect = txt_surf.get_rect(midleft=(coin_rect.right + 6, coin_rect.centery))
             surface.blit(txt_surf, txt_rect)
 
-        surface.blit(self.back_img, self.back_rect)
+        back_draw_rect = self.get_draw_rect("back", self.back_rect)
+        surface.blit(self.back_img, back_draw_rect)
 
 
 
@@ -249,6 +288,11 @@ class PlayingState:
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             pos = event.pos
+
+            clicked_button = self.get_hovered_button(pos)
+            if clicked_button:
+                self.pressed_button = clicked_button
+                self.press_timer = self.press_duration
 
             if self.up1_rect.collidepoint(pos):
                 if self.up1_level < UP_MAX_LEVEL:
