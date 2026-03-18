@@ -9,7 +9,9 @@ class InstructionsState:
         self.back_button = self.game.assets["back_button"]
 
         self.panel_rect = self.panel.get_rect(center=(self.game.WIDTH // 2, self.game.HEIGHT // 2))
-        self.back_rect = self.back_button.get_rect(topleft=(30, 28))
+        self.back_rect = self.back_button.get_rect(
+            midtop=(self.panel_rect.centerx, self.panel_rect.bottom + 20)
+        )
 
         self.pressed_button = None
         self.current_cursor = pygame.SYSTEM_CURSOR_ARROW
