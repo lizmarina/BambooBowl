@@ -10,36 +10,28 @@ class SettingsState:
         self.panel = self.game.assets["settings_panel"]
         self.back_button = self.game.assets["back_button"]
 
+        self.volume_button = self.game.assets["volume_button"]
+        self.fps_button = self.game.assets["showfps_button"]
+        self.reset_button = self.game.assets["resetGame_button"]
+
         self.panel_rect = self.panel.get_rect(center=(self.game.WIDTH // 2, self.game.HEIGHT // 2))
 
         self.font_path = "./assets/Baloo-Regular.ttf"
         self.text_color = (121, 21, 9)
-        self.button_color = (220, 205, 175)
-        self.button_border_color = (227, 178, 83)
         self.bar_bg_color = (210, 190, 160)
         self.bar_fill_color = (121, 21, 9)
 
-        self.font = self.load_font(30)
+        self.font = self.load_font(27)
         self.small_font = self.load_font(24)
-        self.title_font = self.load_font(54)
 
-        self.volume_rect = pygame.Rect(
-            self.panel_rect.left + 70,
-            self.panel_rect.top + 145,
-            self.panel_rect.width - 140,
-            78,
+        self.volume_rect = self.volume_button.get_rect(
+            topleft=(self.panel_rect.left + 70, self.panel_rect.top + 110)
         )
-        self.fps_rect = pygame.Rect(
-            self.panel_rect.left + 70,
-            self.panel_rect.top + 240,
-            self.panel_rect.width - 140,
-            62,
+        self.fps_rect = self.fps_button.get_rect(
+            topleft=(self.panel_rect.left + 70, self.panel_rect.top + 230)
         )
-        self.reset_rect = pygame.Rect(
-            self.panel_rect.left + 50,
-            self.panel_rect.top + 320,
-            self.panel_rect.width - 100,
-            62,
+        self.reset_rect = self.reset_button.get_rect(
+            topleft=(self.panel_rect.left + 50, self.panel_rect.top + 320)
         )
 
         self.reset_confirm = False
@@ -47,6 +39,8 @@ class SettingsState:
         back_x = self.reset_rect.left + 75
         back_y = self.reset_rect.bottom + 25
         self.back_rect = self.back_button.get_rect(topleft=(back_x, back_y))
+        self.reset_message_timer = 0.0
+        self.reset_message_duration = 1.8
 
         self.pressed_button = None
         self.current_cursor = pygame.SYSTEM_CURSOR_ARROW
@@ -84,43 +78,42 @@ class SettingsState:
     def update(self, dt):
         self.update_cursor()
 
+        if self.reset_message_timer > 0:
+            self.reset_message_timer -= dt
+            if self.reset_message_timer < 0:
+                self.reset_message_timer = 0
+
     def draw_volume_button(self, surface, rect, pressed=False):
         draw_rect = rect.move(0, 2) if pressed else rect
-
-        pygame.draw.rect(surface, self.button_color, draw_rect, border_radius=14)
-        pygame.draw.rect(surface, self.button_border_color, draw_rect, width=5, border_radius=14)
+        surface.blit(self.volume_button, draw_rect)
 
         label_surf = self.font.render("Master Volume", True, self.text_color)
-        label_rect = label_surf.get_rect(center=(draw_rect.centerx, draw_rect.top + 25))
+        label_rect = label_surf.get_rect(center=(draw_rect.centerx, draw_rect.top + 35))
         surface.blit(label_surf, label_rect)
 
-        bar_width = 130
-        bar_height = 16
         percent_text = f"{int(const.MASTER_VOLUME * 100)}%"
-
         percent_surf = self.small_font.render(percent_text, True, self.text_color)
-        percent_rect = percent_surf.get_rect(midright=(draw_rect.right - 14, draw_rect.top + 52))
+        percent_rect = percent_surf.get_rect(midright=(draw_rect.right - 14, draw_rect.top + 62))
         surface.blit(percent_surf, percent_rect)
 
         bar_x = draw_rect.left + 18
-        bar_y = draw_rect.top + 44
+        bar_y = draw_rect.top + 54
         bar_right_limit = percent_rect.left - 10
         actual_bar_width = bar_right_limit - bar_x
+        bar_height = 16
 
         bar_bg_rect = pygame.Rect(bar_x, bar_y, actual_bar_width, bar_height)
         pygame.draw.rect(surface, self.bar_bg_color, bar_bg_rect, border_radius=8)
-        pygame.draw.rect(surface, self.button_border_color, bar_bg_rect, width=2, border_radius=8)
+        pygame.draw.rect(surface, self.text_color, bar_bg_rect, width=2, border_radius=8)
 
         fill_width = int(actual_bar_width * const.MASTER_VOLUME)
         if fill_width > 0:
             fill_rect = pygame.Rect(bar_x, bar_y, fill_width, bar_height)
             pygame.draw.rect(surface, self.bar_fill_color, fill_rect, border_radius=8)
 
-    def draw_text_button(self, surface, rect, text, pressed=False):
+    def draw_text_button(self, surface, image, rect, text, pressed=False):
         draw_rect = rect.move(0, 2) if pressed else rect
-
-        pygame.draw.rect(surface, self.button_color, draw_rect, border_radius=14)
-        pygame.draw.rect(surface, self.button_border_color, draw_rect, width=5, border_radius=14)
+        surface.blit(image, draw_rect)
 
         text_surf = self.font.render(text, True, self.text_color)
         text_rect = text_surf.get_rect(center=draw_rect.center)
@@ -138,6 +131,7 @@ class SettingsState:
 
         self.draw_text_button(
             surface,
+            self.fps_button,
             self.fps_rect,
             f"Show FPS: {'ON' if const.SHOW_FPS else 'OFF'}",
             pressed=self.pressed_button == "fps"
@@ -146,10 +140,21 @@ class SettingsState:
         reset_label = "Reset Progress" if not self.reset_confirm else "Click again to confirm"
         self.draw_text_button(
             surface,
+            self.reset_button,
             self.reset_rect,
             reset_label,
             pressed=self.pressed_button == "reset"
         )
+
+        if self.reset_message_timer > 0:
+            message_surf = self.small_font.render("Game reset successfully!", True, self.text_color)
+            message_rect = message_surf.get_rect(center=(self.panel_rect.centerx, self.panel_rect.centery))
+
+            bg_rect = message_rect.inflate(100, 12)
+            pygame.draw.rect(surface, (173, 162, 18), bg_rect, border_radius=10)
+            pygame.draw.rect(surface, (225, 168, 59), bg_rect, width=2, border_radius=10)
+
+            surface.blit(message_surf, message_rect)
 
         back_draw_rect = self.get_draw_rect("back", self.back_rect)
         surface.blit(self.back_button, back_draw_rect)
@@ -176,6 +181,7 @@ class SettingsState:
             else:
                 self.game.playing_state.reset_progress()
                 self.reset_confirm = False
+                self.reset_message_timer = self.reset_message_duration
             return
 
         if button_name == "back":

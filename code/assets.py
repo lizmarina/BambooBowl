@@ -27,6 +27,9 @@ def load_assets():
     assets["back_button"] = load_image("./assets/ui/back_button.png")
     assets["settings_panel"] = load_image("./assets/ui/settings_panel.png")
     assets["instructions_panel"] = load_image("./assets/ui/Instructions_panel.png")
+    assets["volume_button"] = load_image("./assets/ui/volume_button.png")
+    assets["showfps_button"] = load_image("./assets/ui/showfps_button.png")
+    assets["resetGame_button"] = load_image("./assets/ui/resetGame_button.png")
 
     assets["up_button1"] = load_image("./assets/UpButtons/UpButton1.png")
     assets["up_button2"] = load_image("./assets/UpButtons/UpButton2.png")
@@ -38,5 +41,6 @@ def load_assets():
     assets["upgrade2"] = load_image("./assets/Upgrades/Upgrade_2.png")
     assets["upgrade3"] = load_image("./assets/Upgrades/Upgrade_3.png")
     assets["upgrade4"] = load_image("./assets/Upgrades/Upgrade_4.png")
+    assets["upgrade_overlayer"] = load_image("./assets/UpButtons/upgrade_overlayer.png")
 
     return assets

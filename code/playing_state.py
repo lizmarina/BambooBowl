@@ -40,6 +40,7 @@ class PlayingState:
         self.up2_img = self.game.assets["up_button2"]
         self.up3_img = self.game.assets["up_button3"]
         self.up4_img = self.game.assets["up_button4"]
+        self.upgrade_overlay_img = self.game.assets["upgrade_overlayer"]
 
         self.cabins = [
             self.game.assets["cabin1"],
@@ -109,8 +110,10 @@ class PlayingState:
         at_max = level >= UP_MAX_LEVEL
         can_afford = self.money >= cost_value
 
-        button_img = image if (at_max or can_afford) else self.darken_image(image)
-        surface.blit(button_img, draw_rect)
+        surface.blit(image, draw_rect)
+
+        if not at_max and not can_afford:
+            surface.blit(self.upgrade_overlay_img, draw_rect)
 
         indicator_img = self.upgrade_indicators[level]
         indicator_rect = indicator_img.get_rect(center=(draw_rect.centerx + 30, draw_rect.centery))
