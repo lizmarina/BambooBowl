@@ -7,7 +7,7 @@ from code.instructions_state import InstructionsState
 from code.settings import WIDTH, HEIGHT, FPS
 from code.settings_state import SettingsState
 from code import const
-
+pygame.mixer.init()
 
 class Game:
     def __init__(self):
@@ -26,6 +26,16 @@ class Game:
         self.settings_state = SettingsState(self)
         self.instructions_state = InstructionsState(self)
         self.fps_font = pygame.font.Font(None, 28)
+        self.sounds = {
+            "click": pygame.mixer.Sound("./assets/sounds/click_sound.wav"),
+            "coin": pygame.mixer.Sound("./assets/sounds/coin_sound.wav"),
+        }
+        self.sounds["click"].set_volume(0.4)
+        self.sounds["coin"].set_volume(0.4)
+
+        pygame.mixer.music.load("./assets/music/bg_music.mp3")
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
 
     def run(self):
         while self.running:

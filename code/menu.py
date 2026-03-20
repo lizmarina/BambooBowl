@@ -71,6 +71,8 @@ class Menu:
         surface.blit(self.exit_button, exit_draw_rect)
 
     def handle_button_action(self, button_name):
+        self.game.sounds["click"].play()
+
         if button_name == "start":
             self.game.state = "GAME"
             return

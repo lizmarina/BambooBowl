@@ -190,12 +190,14 @@ class SettingsState:
             return
 
     def handle_event(self, event):
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.reset_confirm = False
             self.game.state = "MENU"
             return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.game.sounds["click"].play()
             clicked_button = self.get_hovered_button(event.pos)
             if clicked_button:
                 self.pressed_button = clicked_button

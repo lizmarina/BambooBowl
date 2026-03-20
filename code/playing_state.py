@@ -90,7 +90,7 @@ class PlayingState:
         return UP3_BASE_COST * (self.up3_level + 1)
 
     def up4_cost(self) -> int:
-        return UP4_BASE_COST * (self.up4_level + 1) * 2
+        return UP4_BASE_COST * (self.up4_level + 1)
 
     def load_font(self, size):
         try:
@@ -221,6 +221,7 @@ class PlayingState:
 
         for i in range(len(self.tips)-1, -1, -1):
             if self.tips[i]["tat"] <= 0:
+                self.game.sounds["coin"].play()
                 value = self.tip_value()
                 self.money += value
                 self.gain_accum += value
@@ -305,6 +306,7 @@ class PlayingState:
                         self.up1_level += 1
                         self.click_value += 1
 
+
                 return
 
             if self.up2_rect.collidepoint(pos):
@@ -313,6 +315,7 @@ class PlayingState:
                     if self.money >= cost:
                         self.money -= cost
                         self.up2_level += 1
+                        self.game.sounds["click"].play()
 
                 return
 
@@ -324,6 +327,7 @@ class PlayingState:
                         self.up3_level += 1
                         self.tip_timer = 0.0
                         self.next_tip_time = self.current_tip_spawn_time()
+                        self.game.sounds["click"].play()
 
                 return
 
@@ -343,14 +347,17 @@ class PlayingState:
                     self.money += tip_value
                     self.gain_accum += tip_value
                     self.create_popup(pos[0], pos[1], tip_value)
+                    self.game.sounds["coin"].play()
                     return
 
 
             if self.cabin_rect.collidepoint(pos):
                 self.money += self.click_value
                 self.create_popup(pos[0], pos[1], self.click_value)
+                self.game.sounds["coin"].play()
                 return
 
 
             if self.back_rect.collidepoint(pos):
+                self.game.sounds["click"].play()
                 self.game.state = "MENU"
