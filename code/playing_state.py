@@ -62,6 +62,9 @@ class PlayingState:
         self.up3_level = 0
         self.up4_level = 0
         self.next_tip_time = self.current_tip_spawn_time()
+        self.cabin_upgrade_fx_timer = 0.0
+        self.cabin_upgrade_fx_duration = 0.6
+        self.pending_up4_level = None
 
         self.upgrade_indicators = [
             self.game.assets["upgrade0"],
@@ -243,13 +246,38 @@ class PlayingState:
 
         self.update_cursor()
 
+        if self.cabin_upgrade_fx_timer > 0:
+            previous_timer = self.cabin_upgrade_fx_timer
+            self.cabin_upgrade_fx_timer -= dt
 
+            halfway_point = self.cabin_upgrade_fx_duration / 2
+
+            if self.pending_up4_level is not None and previous_timer > halfway_point >= self.cabin_upgrade_fx_timer:
+                self.up4_level = self.pending_up4_level
+                self.pending_up4_level = None
+
+            if self.cabin_upgrade_fx_timer < 0:
+                self.cabin_upgrade_fx_timer = 0
 
     def draw(self, surface):
         surface.blit(self.game.assets["game_background"], (0, 0))
         cabin_img = self.cabins[self.up4_level]
         self.cabin_rect = cabin_img.get_rect(midbottom=self.cabin_anchor)
         surface.blit(cabin_img, self.cabin_rect)
+
+        if self.cabin_upgrade_fx_timer > 0:
+            progress = 1 - (self.cabin_upgrade_fx_timer / self.cabin_upgrade_fx_duration)
+
+            if progress < 0.5:
+                alpha = int(255 * (progress * 2))
+            else:
+                alpha = int(255 * (1 - (progress - 0.5) * 2))
+
+            overlay = pygame.Surface((self.game_area.width, self.game_area.height), pygame.SRCALPHA)
+
+            overlay.fill((255, 245, 200, alpha))
+
+            surface.blit(overlay, self.game_area.topleft)
 
 
         for t in self.tips:
@@ -305,6 +333,7 @@ class PlayingState:
                         self.money -= cost
                         self.up1_level += 1
                         self.click_value += 1
+                        self.game.sounds["click"].play()
 
 
                 return
@@ -336,7 +365,11 @@ class PlayingState:
                     cost = self.up4_cost()
                     if self.money >= cost:
                         self.money -= cost
-                        self.up4_level += 1
+                        self.pending_up4_level = self.up4_level + 1
+                        self.cabin_upgrade_fx_timer = self.cabin_upgrade_fx_duration
+
+                    if "upgrade" in self.game.sounds:
+                        self.game.sounds["upgrade"].play()
 
                 return
 
@@ -360,4 +393,4 @@ class PlayingState:
 
             if self.back_rect.collidepoint(pos):
                 self.game.sounds["click"].play()
-                self.game.state = "MENU"
+                self.game.change_state("MENU")

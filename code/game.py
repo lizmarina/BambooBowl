@@ -29,13 +29,24 @@ class Game:
         self.sounds = {
             "click": pygame.mixer.Sound("./assets/sounds/click_sound.wav"),
             "coin": pygame.mixer.Sound("./assets/sounds/coin_sound.wav"),
+            "upgrade": pygame.mixer.Sound("./assets/sounds/shine_sound.wav"),
         }
         self.sounds["click"].set_volume(0.4)
         self.sounds["coin"].set_volume(0.4)
+        self.sounds["upgrade"].set_volume(0.3)
 
         pygame.mixer.music.load("./assets/music/bg_music.mp3")
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(-1)
+
+        self.transition_active = False
+        self.transition_alpha = 0
+        self.transition_speed = 1000
+        self.transition_direction = 1
+        self.next_state = None
+
+        self.transition_surface = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.transition_color = (60, 30, 10)
 
     def run(self):
         while self.running:
@@ -71,6 +82,22 @@ class Game:
         elif self.state == "INSTRUCTIONS":
             self.instructions_state.update(dt)
 
+        if self.transition_active:
+            self.transition_alpha += self.transition_speed * dt * self.transition_direction
+
+            if self.transition_direction == 1 and self.transition_alpha >= 255:
+                self.transition_alpha = 255
+
+                # troca o state aqui (no escuro)
+                self.state = self.next_state
+
+                # começa a clarear
+                self.transition_direction = -1
+
+            elif self.transition_direction == -1 and self.transition_alpha <= 0:
+                self.transition_alpha = 0
+                self.transition_active = False
+
     def draw(self):
         self.window.fill((30, 30, 30))
 
@@ -88,5 +115,18 @@ class Game:
             fps_surf = self.fps_font.render(f"FPS: {fps}", True, (255, 255, 255))
             self.window.blit(fps_surf, (10, 10))
 
+        if self.transition_active:
+            self.transition_surface.fill(self.transition_color)
+            self.transition_surface.set_alpha(int(self.transition_alpha))
+            self.window.blit(self.transition_surface, (0, 0))
+
         pygame.display.flip()
 
+    def change_state(self, new_state):
+        if self.transition_active:
+            return
+
+        self.transition_active = True
+        self.transition_direction = 1
+        self.transition_alpha = 0
+        self.next_state = new_state

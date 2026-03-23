@@ -74,13 +74,14 @@ class Menu:
         self.game.sounds["click"].play()
 
         if button_name == "start":
-            self.game.state = "GAME"
+            self.game.change_state("GAME")
+
             return
         if button_name == "settings":
-            self.game.state = "SETTINGS"
+            self.game.change_state("SETTINGS")
             return
         if button_name == "instructions":
-            self.game.state = "INSTRUCTIONS"
+            self.game.change_state("INSTRUCTIONS")
             return
         if button_name == "exit":
             self.game.running = False

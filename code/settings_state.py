@@ -186,14 +186,14 @@ class SettingsState:
 
         if button_name == "back":
             self.reset_confirm = False
-            self.game.state = "MENU"
+            self.game.change_state("MENU")
             return
 
     def handle_event(self, event):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.reset_confirm = False
-            self.game.state = "MENU"
+            self.game.change_state("MENU")
             return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

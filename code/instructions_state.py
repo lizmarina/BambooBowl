@@ -63,6 +63,6 @@ class InstructionsState:
                 if released_over == self.pressed_button:
                     if self.pressed_button == "back":
                         self.game.sounds["click"].play()
-                        self.game.state = "MENU"
+                        self.game.change_state("MENU")
 
                 self.pressed_button = None
